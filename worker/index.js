@@ -1,4 +1,4 @@
-const keys = require('./keys'); // looking for file that has keys for connecting to other container
+const keys = require('./keys'); // looking for file that has keys for connecting to other container (connection keys)
 const redis = require('redis');
 
 const redisClient = redis.createClient({
@@ -17,7 +17,7 @@ function fib(index) {
 
 // anytime we get a new value in redis we will calculate new value and insert into a hash called values
 sub.on('message', (channel, message) => {
-  redisClient.hset('values', message, fib(parseInt(message)))
+  redisClient.hset('values', message, fib(parseInt(message)));
 });
 
 // sub = subscribe

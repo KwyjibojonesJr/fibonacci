@@ -29,7 +29,7 @@ class Fib extends Component { //extending the component base class
   }
 
 // capture user input
-handleSubmit = async (event) => {
+handleSubmit = async (event) => { //bound function
   event.preventDefault();
 
   await axios.post('/api/values', {
@@ -41,7 +41,7 @@ handleSubmit = async (event) => {
 // iterate over every object in the seenIndexes array and just pull out the list of numbers we want to display
 // the .join will format the output with a comma and space characters.
   renderSeenIndexes() {
-    return this.state.seenIndexes.map(({ number }) => number).join(', ')
+    return this.state.seenIndexes.map(({ number }) => number).join(', ');
   }
 
 // helper method for rendering values from redis. Pulling back an object with key:value pairs.
@@ -52,7 +52,7 @@ handleSubmit = async (event) => {
     for (let key in this.state.values) {
       entries.push(
         <div key={key}>
-          For index {key} I calculated {this.state.values[key}]}
+          For index {key} I calculated {this.state.values[key]}
          </div>
       );
     }
@@ -80,6 +80,8 @@ handleSubmit = async (event) => {
         {this.renderValues()} //helper method
       </div>
 
-    )
+    );
   }
 }
+
+export default Fib;

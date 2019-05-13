@@ -1,16 +1,15 @@
 const keys = require('./keys');
 
-//Express app setup
+// Express App Setup
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-//creating a new express application
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Postgres client setup
+// Postgres Client Setup
 const { Pool } = require('pg');
 const pgClient = new Pool({
   user: keys.pgUser,
@@ -19,16 +18,13 @@ const pgClient = new Pool({
   password: keys.pgPassword,
   port: keys.pgPort
 });
+pgClient.on('error', () => console.log('Lost PG connection'));
 
-// error catching
-pgClient.on('error', () => console.log('Lost PG connnection'));
-
-// create a table for indicies
 pgClient
-  .query('CREATE TABLE IF NOT EXISTS values (number INT')
+  .query('CREATE TABLE IF NOT EXISTS values (number INT)')
   .catch(err => console.log(err));
 
-// Redis client setup
+// Redis Client Setup
 const redis = require('redis');
 const redisClient = redis.createClient({
   host: keys.redisHost,
@@ -40,11 +36,11 @@ const redisPublisher = redisClient.duplicate();
 // Express route handlers
 
 app.get('/', (req, res) => {
-  res.send("Hi");
+  res.send('Hi');
 });
 
 app.get('/values/all', async (req, res) => {
-  const values = await pgClient.query('SELECT * from values')
+  const values = await pgClient.query('SELECT * from values');
 
   res.send(values.rows);
 });
@@ -55,12 +51,11 @@ app.get('/values/current', async (req, res) => {
   });
 });
 
-// recieve new values from react app
 app.post('/values', async (req, res) => {
   const index = req.body.index;
-  // place cap to prevent very log calculation times due to fib calc method being used
+
   if (parseInt(index) > 40) {
-    return res.status(422).send('Index number too high');
+    return res.status(422).send('Index too high');
   }
 
   redisClient.hset('values', index, 'Nothing yet!');
@@ -73,4 +68,3 @@ app.post('/values', async (req, res) => {
 app.listen(5000, err => {
   console.log('Listening');
 });
-
